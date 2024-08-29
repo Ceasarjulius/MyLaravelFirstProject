@@ -18,8 +18,9 @@ class UserController extends Controller
 
         //    $incomingFields['password'] = bcrypt($incomingFields['password']); you can either use
         // this or use the hashed one in the user.php model
-           User::create($incomingFields);
-           return 'you have entered to the log in screen';
+         $user =  User::create($incomingFields);//temporarly store the user details and pass them directly
+         auth()->login($user);  //this will pass on the cookies of the user and allow him to be loged in directly
+           return redirect('/')->with('success', 'you have registered an account succesfully');
     }
 
     public function login(Request $request){
@@ -32,10 +33,10 @@ class UserController extends Controller
         'password' =>$incomingFields['loginpassword']
       ])){
         $request->session()->regenerate();  //for setting the user session
-        return 'congrats buddy!!!';
+        return redirect('/')->with('success', 'you have succesfully loged in');
       }
       else{
-        return'oops sorry dude';
+        return redirect('/')->with('failure', 'Incorrect log in credentials');
       }
     }
 
@@ -47,6 +48,11 @@ class UserController extends Controller
         else{
             return view('homepage');
         }
+    }
+
+    public function logout(){
+        auth()->logout();
+        return redirect('/')->with('success', 'you have succesfully loged out');
     }
 }
 
